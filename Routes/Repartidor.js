@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var Pedidos =  require('../Constantes/Pedidos');
 
+var ebs = ''; 
+
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
