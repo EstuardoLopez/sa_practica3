@@ -2,7 +2,14 @@ const express = require('express');
 const app = express();
 const readline = require('readline');
 const axios = require('axios');
-var puerto = '3010';
+var config =  require('../Constantes/config');
+
+//var puerto = '3010';
+var puerto = config.urls.Cliente.puerto;
+var urlESB = config.urls.root + config.urls.ESB.puerto;
+var urlRegistrarPedido = urlESB + config.urls.ESB.root + config.urls.ESB.Restaurante.registrarPedido;
+var urlConsultarEstado = urlESB + config.urls.ESB.root + config.urls.ESB.Restaurante.consultarEstadoPedido;
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -27,8 +34,11 @@ var lineaDivisoraFin    = '=====================================================
 
 app.listen(puerto, function() {
   console.log('*************************************************************');
-  console.log('**************************BIENVENIDO*************************');
+  console.log('****************************CLIENTE**************************');
   console.log('*************************************************************');
+  console.log('escuchando en ' + config.urls.root+puerto);
+  //console.log(urlRegistrarPedido);
+  //console.log(urlConsultarEstado);
   iniciarServer();
 });
 
@@ -86,7 +96,8 @@ function iniciarServer(){
                 blnPedidoNombre = false;
                 console.log(lineaDivisoraFin);
 
-                axios.post('http://localhost:3011/Restaurante/RegistrarPedido', { item })
+                //axios.post('http://localhost:3011/Restaurante/RegistrarPedido', { item })
+                axios.post(urlRegistrarPedido, { item })
                 .then(res => {
                     console.log('Su pedido fue registrado correctamente');
                     console.log('El id de su pedido es: CD' + ContadorPedidos);
@@ -100,7 +111,8 @@ function iniciarServer(){
                 CodigoBuscado = line.trim().toUpperCase();
                 console.log('   Buscando pedido con codigo ' + CodigoBuscado);
                 var item = { idPedido : CodigoBuscado.replace('CD','')};
-                axios.post('http://localhost:3011/Restaurante/ConsultarEstado', { item })
+
+                axios.post(urlConsultarEstado, { item })
                 .then(res => {
                     console.log(res.data);
                     rl.prompt();

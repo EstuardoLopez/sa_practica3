@@ -3,13 +3,17 @@ const readline = require('readline');
 var repartidorRouter = require('../Routes/Repartidor');
 var Pedidos =  require('../Constantes/Pedidos');
 const axios = require('axios');
+var config =  require('../Constantes/config');
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/Repartidor', repartidorRouter);
-var puerto = '3012';
+//var puerto = '3012';
+var puerto = config.urls.Repartidor.puerto;
+var urlESB = config.urls.root + config.urls.ESB.puerto;
+var urlRegistrarEntrega = urlESB + config.urls.ESB.root + config.urls.ESB.Restaurante.registrarEntrega;
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -19,8 +23,10 @@ const rl = readline.createInterface({
 
 app.listen(puerto, function() {
   console.log('*************************************************************');
-  console.log('**************************BIENVENIDO*************************');
+  console.log('**************************REPARTIDOR*************************');
   console.log('*************************************************************');
+  console.log('escuchando en ' + config.urls.root+puerto);
+  //console.log(urlRegistrarEntrega);
   iniciarServer();
 });
 
@@ -62,7 +68,8 @@ function iniciarServer(){
                 }else{
                     //Registrar entrega en restaurante
                     var item = itemEncontrado;
-                    axios.post('http://localhost:3011/Restaurante/RegistrarEntrega', { item })
+                    //axios.post('http://localhost:3011/Restaurante/RegistrarEntrega', { item })
+                    axios.post(urlRegistrarEntrega, { item })
                     .then(res => {
                         console.log('Pedido entregado correctamente');
                         Pedidos.recibidos[indexItem].estado = 3;
